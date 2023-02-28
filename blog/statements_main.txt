@@ -1,0 +1,5 @@
+
+flask --app blog/blog db migrate -m "modelo usuarios" --Migrar la estructura de la base de datos
+flask --app blog/blog db upgrade --Hacer cambios en la base de datos
+
+flask --app blog/blog db downsgrade

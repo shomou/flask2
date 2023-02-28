@@ -1,4 +1,5 @@
 from app import bdd
+from datetime import datetime
 
 class Usuario(bdd.Model):
     id = bdd.Column(bdd.Integer, primary_key=True)
@@ -8,3 +9,13 @@ class Usuario(bdd.Model):
 
     def __repr__(self):
         return '<Usuario {}>'.format(self.username)
+
+class Pubs(bdd.Model):
+    id = bdd.Column(bdd.Integer, primary_key=True)
+    cuerpo = bdd.Column(bdd.String(256))
+    timestamp = bdd.Column(bdd.DateTime, index=True, default=datetime.now)
+    id_usuario = bdd.Column(bdd.Integer, bdd.ForeignKey('usuario.id'))
+
+    def __repr__(self):
+        return '<Publicación {}>'.format(self.cuerpo)
+
