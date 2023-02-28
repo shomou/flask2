@@ -1,8 +1,13 @@
 from decouple import config
 import os
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+
 class Ajustes(object):
   SECRET_KEY = os.environ.get('SECRET_KEY') or 'contraseña'
+  SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
+        'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
+  SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class Config:
     SECRET_KEY = config('SECRET_KEY')
