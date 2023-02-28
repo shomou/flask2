@@ -1,7 +1,7 @@
 {% extends "base.html" %} 
 
 {% block contenido %}
-    <h1>¡Hola, {{ usuario.nombre }}!</h1>
+    <h1>¡Hola, {{ current_user.username }}!</h1>
     {% for pub in pubs %}
         <div>
             <p>{{ pub.autor.usuario }} Twiteo: <b>{{ pub.pub }}</b></p>

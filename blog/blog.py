@@ -12,5 +12,6 @@ if __name__ == '__main__':
     ##  Blueprint Section
 
     ##  Error Handler Section
+    
     app.register_error_handler(404,page_not_found)    
     app.run()
