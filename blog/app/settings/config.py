@@ -13,7 +13,7 @@ class Config:
     SECRET_KEY = config('SECRET_KEY')
 
 class DevelopmentConfig(Ajustes):
-    DEBUG = False
+    DEBUG = True
 
 class ConexionMail(object):
     MAIL_SERVER= 'smtp.gmail.com'

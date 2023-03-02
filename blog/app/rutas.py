@@ -87,6 +87,38 @@ def ultima_sesion():
         current_user.ultima_sesion = datetime.utcnow()
         bdd.session.commit()
 
+@app.route('/seguir/<username>')
+@login_required
+def seguir(username):
+    usuario = Usuario.query.filter_by(username=username).first()
+    if usuario is None:
+        flash('Usuario {} no encontrado.'.format(username))
+        return redirect(url_for('index'))
+    if usuario == current_user:
+        flash('¡No puedes realizar esta acción contigo mismo!')
+        return redirect(url_for('perfil_usuario', username=username))
+    current_user.seguir(usuario)
+    bdd.session.commit()
+    flash('¡Ahora estás siguiendo a {}!'.format(username))
+    return redirect(url_for('perfil_usuario', username=username))
+
+@app.route('/dejar_seguir/<username>')
+@login_required
+def dejar_seguir(username):
+    usuario = Usuario.query.filter_by(username=username).first()
+    if usuario is None:
+        flash('Usuario {} no encontrado.'.format(username))
+        return redirect(url_for(index))
+    if usuario == current_user:
+        flash('¡No puedes realizar esta acción contigo mismo!')
+        return redirect(url_for('perfil_usuario', username=username))
+    current_user.dejar_seguir(usuario)
+    bdd.session.commit()
+    flash('Dejaste de seguir a {}.'.format(username))
+    return redirect(url_for('perfil_usuario', username=username))
+
+    
+
 
 @app.route('/gracias')
 def gracias():

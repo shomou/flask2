@@ -10,6 +10,10 @@
                 {% if usuario.ultima_sesion %}<p>Ultima vez activo: {{ usuario.ultima_sesion }}</p>{% endif %}
                 {% if usuario == current_user %}
                     <p><a href="{{ url_for('editar_perfil') }}">Editar perfil</a></p>
+                    {% elif not current_user.siguiendo(usuario) %}
+                    <p><a href="{{ url_for('seguir', username=usuario.username) }}">Seguir</a></p>
+                    {% else %}
+                    <p><a href="{{ url_for('dejar_seguir', username=usuario.username) }}">Dejar de seguir</a></p>
                 {% endif %}
             </td>
         </tr>
