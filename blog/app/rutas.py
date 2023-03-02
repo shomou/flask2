@@ -1,6 +1,6 @@
-from app import app
+from app import app, bdd
 from flask import render_template, redirect, url_for, flash, request
-from app.formularios import FormInicio
+from app.formularios import FormInicio, FormRegistro
 from flask_login import current_user, login_user, logout_user, login_required
 from app.modelos import Usuario
 from werkzeug.urls import url_parse
@@ -34,6 +34,20 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+@app.route('/registro', methods=['GET','POST'])
+def registro():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = FormRegistro()
+    if form.validate_on_submit():
+        usuario = Usuario(username=form.username.data, email= form.email.data)
+        usuario.def_clave(form.contraseña.data)
+        bdd.session.add(usuario)
+        bdd.session.commit()
+        flash('Usuario registrado correctamente, ahora puedes iniciar sessión.')
+        return redirect(url_for('login'))
+    return render_template('registro.html',titulo='Registro', form=form)
+
 
 @app.route('/gracias')
 def gracias():
