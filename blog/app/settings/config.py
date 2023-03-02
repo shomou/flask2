@@ -13,7 +13,15 @@ class Config:
     SECRET_KEY = config('SECRET_KEY')
 
 class DevelopmentConfig(Ajustes):
-    DEBUG = True
+    DEBUG = False
+
+class ConexionMail(object):
+    MAIL_SERVER= 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = 'edmundo.jayr.perez.rosales@gmail.com'
+    MAIL_PASSWORD = 'edMj4p390!2e'
+    ADMINS = 'edmundo.jayr.perez.rosales@gmail.com'
 
 config = {
     'development' : DevelopmentConfig
