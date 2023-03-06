@@ -1,18 +1,26 @@
 from app import app, bdd
 from flask import render_template, redirect, url_for, flash, request
-from app.formularios import FormInicio, FormRegistro, EditarPerfil
+from app.formularios import FormInicio, FormRegistro, EditarPerfil, Publicaciones
 from flask_login import current_user, login_user, logout_user, login_required
-from app.modelos import Usuario
+from app.modelos import Usuario, Pubs
 from werkzeug.urls import url_parse
 from datetime import datetime
 
 
 ## Index 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET','POST'])
+@app.route('/index', methods=['GET','POST'])
 @login_required
 def index():
-    return render_template('index.html', titulo = 'Inicio')
+    form = Publicaciones()
+    if form.validate_on_submit():
+        post = Pubs(cuerpo=form.post.data, autor=current_user)
+        bdd.session.add(post)
+        bdd.session.commit()
+        flash('Publicación enviada correctamente.')
+        return redirect(url_for('index'))
+    posts = current_user.pubs_seguidores().all()
+    return render_template('index.html', titulo = 'Página de inicio', form=form, posts=posts)
 
 ## Login de usuarios
 @app.route('/login', methods=['GET','POST'])
