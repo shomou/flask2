@@ -2,9 +2,30 @@
 
 {% block contenido %}
     <h1>¡Hola, {{ current_user.username }}!</h1>
-    {% for pub in pubs %}
-        <div>
-            <p>{{ pub.autor.usuario }} Twiteo: <b>{{ pub.pub }}</b></p>
-        </div>
-    {% endfor %} 
+    {% if form %}
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.post.label }} <br>
+            {{ form.post(cols=32, rows=4) }}<br>
+            {% for error in form.post.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+    {% endif %}
+    {% for post in posts %}
+    <p>
+        {% include '$post.html' %}
+    </p>
+    {% endfor %}
+    {% if pagina_ant %}
+            <a href="{{ pagina_ant }}">Página anterior</a>
+    {% endif %}
+    {% if pagina_sig %}
+            <a href="{{ pagina_sig }}">Página siguiente</a>
+    {% endif %}
+    
+     
 {% endblock %}

@@ -34,3 +34,10 @@ class EditarPerfil(FlaskForm):
             usuario = Usuario.query.filter_by(username=self.username.data).first()
             if usuario is not None:
                 raise ValidationError('El nombre de usuario ya existe, por favor intenta con otro.')
+
+## Formulario publicaciones
+class Publicaciones(FlaskForm):
+    post = TextAreaField("Escribee algo al mundo", validators=[DataRequired(), Length(min=1, max=140)])
+    submit = SubmitField('Twittear')
+
+

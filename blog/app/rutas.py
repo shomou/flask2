@@ -1,18 +1,29 @@
 from app import app, bdd
 from flask import render_template, redirect, url_for, flash, request
-from app.formularios import FormInicio, FormRegistro, EditarPerfil
+from app.formularios import FormInicio, FormRegistro, EditarPerfil, Publicaciones
 from flask_login import current_user, login_user, logout_user, login_required
-from app.modelos import Usuario
+from app.modelos import Usuario, Pubs
 from werkzeug.urls import url_parse
 from datetime import datetime
 
 
 ## Index 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET','POST'])
+@app.route('/index', methods=['GET','POST'])
 @login_required
 def index():
-    return render_template('index.html', titulo = 'Inicio')
+    form = Publicaciones()
+    if form.validate_on_submit():
+        post = Pubs(cuerpo=form.post.data,autor=current_user)
+        bdd.session.add(post)
+        bdd.session.commit()
+        flash('Publicación enviada correctamente.')
+        return redirect(url_for('index'))
+    pagina = request.args.get('pagina',1,type=int)
+    posts = current_user.pubs_seguidores().paginate(page=pagina, per_page=app.config['POSTS_PER_PAGE'],error_out=False)
+    pagina_sig = url_for('index', pagina=posts.next_num) if posts.has_next else None
+    pagina_ant = url_for('index', pagina=posts.prev_num) if posts.has_prev else None
+    return render_template('index.html', titulo = 'Página de inicio', form=form, posts=posts.items, pagina_sig=pagina_sig, pagina_ant=pagina_ant)
 
 ## Login de usuarios
 @app.route('/login', methods=['GET','POST'])
@@ -59,11 +70,11 @@ def registro():
 @login_required
 def perfil_usuario(username):
     usuario = Usuario.query.filter_by(username=username).first_or_404()
-    posts = [
-        {'autor': usuario, 'cuerpo':'Test post #1'},
-        {'autor': usuario, 'cuerpo':'Test post #2'}
-    ]
-    return render_template('usuarios.html', usuario=usuario, posts=posts)
+    pagina =  request.args.get('pagina',1, type=int)
+    posts = usuario.pubs.order_by(Pubs.timestamp.desc()).paginate(page=pagina,per_page=app.config['POSTS_PER_PAGE'],error_out=False)
+    pagina_sig =  url_for('perfil_usuario', username=usuario.username, pagina=posts.next_num) if posts.has_next else None
+    pagina_ant = url_for('perfil_usuario', username=usuario.username, pagina=posts.prev_num) if posts.has_prev else None
+    return render_template('usuarios.html', usuario=usuario, posts=posts.items, pagina_sig=pagina_sig, pagina_ant=pagina_ant)
 
 ## Editar Perfil
 @app.route('/editar_perfil', methods=['GET', 'POST'])
@@ -117,6 +128,15 @@ def dejar_seguir(username):
     flash('Dejaste de seguir a {}.'.format(username))
     return redirect(url_for('perfil_usuario', username=username))
 
+## Ruta esplorar
+@app.route('/explorar')
+@login_required
+def explorar():
+    pagina = request.args.get('pagina', 1, type=int)
+    posts = Pubs.query.order_by(Pubs.timestamp.desc()).paginate(page=pagina, per_page=app.config['POSTS_PER_PAGE'], error_out=False)
+    pagina_sig = url_for('explorar', pagina=posts.next_num) if posts.has_next else None
+    pagina_ant = url_for('explorar', pagina=posts.prev_num) if posts.has_prev else None
+    return render_template('index.html', titulo='Explorar', posts=posts.items, pagina_sig=pagina_sig, pagina_ant=pagina_ant)
     
 
 
